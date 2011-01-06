@@ -964,12 +964,15 @@ public class Magfield
 	
 	public static double calculate(double lat, double lon, int yyyy, int mm, int dd, int latsign, int lonsign)
 	{
-		double height = 0;
 		int model = 9; // IGRF 2005
+		return calculate(lat, lon, yyyy, mm, dd, latsign, lonsign, model);
+	}
+	
+	public static double calculate(double lat, double lon, int yyyy, int mm, int dd, int latsign, int lonsign, int model)
+	{
+		double height = 0;
 		double[] field = new double[6];
-		// int latsign = +1; // N
-		// int lonsign = -1; // W
-		// int varsign = -1; // W
+
 		int varsign = lonsign;
 		
 		double variation = Magfield.rad_to_deg(varsign
