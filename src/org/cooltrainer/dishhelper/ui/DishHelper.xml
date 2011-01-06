@@ -1,0 +1,162 @@
+<display resourcebundle="DishHelper">
+	<shell var="shell" style="SHELL_TRIM" text="@APPLICATION_NAME" size="1000,600" shelllistener="shellListener">
+		<menubar>
+			<menuitem text="&amp;File" style="CASCADE">
+				<menu>
+					<menuitem text="&amp;Open" selectionlistener="openAction"/>
+					<menusplit/>
+					<menuitem text="E&amp;xit" selectionlistener="exitAction"/>
+				</menu>
+			</menuitem>
+			<menuitem text="&amp;Tools" style="CASCADE">
+				<menu>
+					<menuitem text="&amp;Geolocate" selectionlistener="geolocateAction"/>
+				</menu>
+			</menuitem>\
+			<menuitem text="&amp;Help" style="CASCADE">
+				<menu>
+					<menuitem text="&amp;About" selectionlistener="aboutAction"/>
+				</menu>
+			</menuitem>
+		</menubar>
+		<rowlayout type="VERTICAL">
+			<composite style="NONE">
+				<rowlayout type="HORIZONTAL">
+					<composite style="NONE">
+						<gridlayout numcolumns="1">
+							<group text="@GEOLOCATION">
+								<gridlayout numcolumns="4">
+									<griddata grabexcesshorizontalspace="false" horizontalalignment="BEGINNING">
+										<label text="@LATITUDE"/>
+									</griddata>
+									<griddata grabexcesshorizontalspace="true" horizontalalignment="END">
+										<spinner var="spinnerLatitude" digits="3" maximum="90000" selectionlistener="spinnerLatitudeAction"/>
+									</griddata>
+									<griddata grabexcesshorizontalspace="false" horizontalalignment="BEGINNING">
+										<label text="@DEGREES"/>
+									</griddata>
+									<griddata grabexcesshorizontalspace="true" horizontalalignment="BEGINNING">
+										<composite>
+											<gridlayout numcolumns="2" horizontalspacing="0" verticalspacing="0" marginheight="0" marginwidth="0">
+												<griddata grabexcesshorizontalspace="false" horizontalalignment="BEGINNING">
+													<button style="RADIO" text="@N" var="north" selectionlistener="northAction"/>
+												</griddata>
+												<griddata grabexcesshorizontalspace="false" horizontalalignment="BEGINNING">
+													<button style="RADIO" text="@S" var="south" selectionlistener="southAction"/>
+												</griddata>
+											</gridlayout>
+										</composite>
+									</griddata>
+								
+									
+									<griddata grabexcesshorizontalspace="false" horizontalalignment="BEGINNING">
+										<label text="@LONGITUDE"/>
+									</griddata>
+									<griddata grabexcesshorizontalspace="true" horizontalalignment="END">
+										<spinner var="spinnerLongitude" selectionlistener="spinnerLongitudeAction" digits="3" maximum="180000"/>
+									</griddata>
+									<griddata grabexcesshorizontalspace="false" horizontalalignment="BEGINNING">
+										<label text="@DEGREES"/>
+									</griddata>
+									<griddata grabexcesshorizontalspace="true" horizontalalignment="BEGINNING">
+										<composite>
+											<gridlayout numcolumns="2" horizontalspacing="0" verticalspacing="0" marginheight="0" marginwidth="0">
+												<griddata grabexcesshorizontalspace="false" horizontalalignment="BEGINNING">
+													<button style="RADIO" text="@E" var="east" selectionlistener="eastAction"/>
+												</griddata>
+												<griddata grabexcesshorizontalspace="false" horizontalalignment="BEGINNING">
+													<button style="RADIO" text="@W" var="west" selectionlistener="westAction"/>
+												</griddata>
+											</gridlayout>
+										</composite>
+									</griddata>
+								</gridlayout>
+							</group>
+							<griddata style="HORIZONTAL_ALIGN_FILL|GRAB_HORIZONTAL">
+								<group text="@ORBITALLOCATIONS">
+									<gridlayout numcolumns="1">
+										<griddata style="HORIZONTAL_ALIGN_FILL|GRAB_HORIZONTAL">
+											<combo var="comboSatelliteLeft" selectionlistener="satLeftAction" style="READ_ONLY"/>
+										</griddata>
+										<griddata style="HORIZONTAL_ALIGN_FILL|GRAB_HORIZONTAL">
+											<combo var="comboSatelliteRight" selectionlistener="satRightAction" style="READ_ONLY"/>
+										</griddata>
+									</gridlayout>
+								</group>
+							</griddata>
+							<griddata style="HORIZONTAL_ALIGN_FILL|GRAB_HORIZONTAL">
+								<group text="@AIMING">
+									<gridlayout numcolumns="2">
+										<griddata style="HORIZONTAL_ALIGN_FILL|GRAB_HORIZONTAL">
+											<label text="@TRUEAZIMUTH"/>
+											<label var="labelTrueAz"/>
+											<label text="@MAGNETICAZIMUTH"/>
+											<label var="labelMagneticAz"/>
+											<label text="@ELEVATION"/>
+											<label var="labelElevation"/>
+											<label text="@SKEW"/>
+											<label var="labelSkew"/>
+										</griddata>
+									</gridlayout>
+								</group>
+							</griddata>
+							<griddata style="HORIZONTAL_ALIGN_FILL|GRAB_HORIZONTAL">
+								<group text="@SATELLITEDETAIL">
+									<gridlayout numcolumns="2" verticalspacing="10">
+										<griddata style="HORIZONTAL_ALIGN_FILL|GRAB_HORIZONTAL" horizontalspan="2">
+											<combo var="comboDetailSatellites" style="READ_ONLY" selectionlistener="detailSatelliteAction"/>
+										</griddata>
+										<griddata style="HORIZONTAL_ALIGN_FILL|GRAB_HORIZONTAL">
+											<label text="@CBAND"/>
+											<combo var="comboDetailTranspondersC" selectionlistener="detailTransponderCAction" style="READ_ONLY"/>
+										</griddata>
+										<griddata style="HORIZONTAL_ALIGN_FILL|GRAB_HORIZONTAL">
+											<label text="@KUBAND"/>
+											<combo var="comboDetailTranspondersKu" selectionlistener="detailTransponderKuAction" style="READ_ONLY"/>
+										</griddata>
+										<griddata style="HORIZONTAL_ALIGN_FILL|GRAB_HORIZONTAL">
+											<label text="@KABAND"/>
+											<combo var="comboDetailTranspondersKa" selectionlistener="detailTransponderKaAction" style="READ_ONLY"/>
+										</griddata>
+										<griddata style="HORIZONTAL_ALIGN_FILL|GRAB_HORIZONTAL">
+											<label text="@POLARIZATION"/>
+											<label var="labelDetailPolarization"/>
+										</griddata>
+										<griddata style="HORIZONTAL_ALIGN_FILL|GRAB_HORIZONTAL">
+											<label text="@SYMBOLRATE"/>
+											<label var="labelDetailSymbolRate"/>
+										</griddata>
+									</gridlayout>
+								</group>
+							</griddata>
+						</gridlayout>
+					</composite>
+					<composite var="composite_image">
+						<rowlayout type="HORIZONTAL" spacing="0" marginheight="0" marginwidth="0">
+							<scale selectionlistener="zoomAction" var="scaleZoom" style="VERTICAL" minimum="1" maximum="12" increment="1" pageincrement="3"/>
+							<rowdata width="620" height="500">
+								<canvas var="canvas" paintlistener="canvasPaintListener">
+									<rowlayout type="VERTICAL">
+										<button style="CHECK" var="checkCompass" selectionlistener="checkCompassAction" text="@COMPASS" />
+										<button style="CHECK" var="checkMap" selectionlistener="checkMapAction" text="@MAP" selection="TRUE" />
+									</rowlayout>
+								</canvas>
+							</rowdata>
+						</rowlayout>
+					</composite>
+				</rowlayout>
+			</composite>
+			<rowdata width="600">
+				<composite style="NONE">
+					<filllayout>
+						<label style="NONE" var="labelStatus"/>
+					</filllayout>
+				</composite>
+			</rowdata>
+		</rowlayout>
+		<noadd>
+			<label id="aboutIcon" var="lol"/>
+			<xmldialog var="aboutDialog" xml="org/cooltrainer/dishhelper/ui/About.xml" varobj="this"/>
+		</noadd>
+	</shell>
+</display>
