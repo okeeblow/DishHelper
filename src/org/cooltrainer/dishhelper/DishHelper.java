@@ -272,9 +272,19 @@ public class DishHelper
 	private int longitudeSign = 1;
 	
 	/**
+	 * User's elevation
+	 */
+	private double elevation = 0.0;
+	
+	/**
 	 * Path to last-known copy of satellites.xml
 	 */
 	private String xmlPath = "";
+	
+	/**
+	 * URI of the USGS elevation web service
+	 */
+	public static final String ELEVATION_URI = "http://gisdata.usgs.gov/xmlwebservices2/elevation_service.asmx/getElevation?Elevation_Units=FEET&Source_Layer=-1&Elevation_Only=FALSE";
 	
 	/**
 	 * URL of our IP-based geolocator
@@ -375,6 +385,7 @@ public class DishHelper
 			latitudeSign = (int)location[1];
 			longitude = location[2];
 			longitudeSign = (int)location[3];
+			elevation = elevate((latitude * latitudeSign), (longitude * longitudeSign));
 			setCoordinates(latitude, latitudeSign, longitude, longitudeSign);
 			imageMap = getMap(latitude, latitudeSign, longitude, longitudeSign, mapZoom);
 			canvas.redraw();
@@ -391,9 +402,10 @@ public class DishHelper
 		{
 			latitude = Double.parseDouble(spinnerLatitude.getText());
 			geolocate = false;
+			elevation = elevate((latitude * latitudeSign), (longitude * longitudeSign));
 			imageMap = getMap(latitude, latitudeSign, longitude, longitudeSign, mapZoom);
 			canvas.redraw();
-			Double[] calculations = calculate(latitude, latitudeSign, longitude, longitudeSign, satelliteLeft, satelliteRight);
+			Double[] calculations = calculate(latitude, latitudeSign, longitude, longitudeSign, elevation, satelliteLeft, satelliteRight);
 			azimuth = calculations[0];
 			declination = calculations[1];
 		}
@@ -408,9 +420,10 @@ public class DishHelper
 		{
 			longitude = Double.parseDouble(spinnerLongitude.getText());
 			geolocate = false;
+			elevation = elevate((latitude * latitudeSign), (longitude * longitudeSign));
 			imageMap = getMap(latitude, latitudeSign, longitude, longitudeSign, mapZoom);
 			canvas.redraw();
-			Double[] calculations = calculate(latitude, latitudeSign, longitude, longitudeSign, satelliteLeft, satelliteRight);
+			Double[] calculations = calculate(latitude, latitudeSign, longitude, longitudeSign, elevation, satelliteLeft, satelliteRight);
 			azimuth = calculations[0];
 			declination = calculations[1];
 		}
@@ -425,9 +438,10 @@ public class DishHelper
 		{
 			latitudeSign = 1;
 			geolocate = false;
+			elevation = elevate((latitude * latitudeSign), (longitude * longitudeSign));
 			imageMap = getMap(latitude, latitudeSign, longitude, longitudeSign, mapZoom);
 			canvas.redraw();
-			Double[] calculations = calculate(latitude, latitudeSign, longitude, longitudeSign, satelliteLeft, satelliteRight);
+			Double[] calculations = calculate(latitude, latitudeSign, longitude, longitudeSign, elevation, satelliteLeft, satelliteRight);
 			if(calculations[0] != null && calculations[1] != null)
 			{
 				azimuth = calculations[0];
@@ -445,9 +459,10 @@ public class DishHelper
 		{
 			latitudeSign = -1;
 			geolocate = false;
+			elevation = elevate((latitude * latitudeSign), (longitude * longitudeSign));
 			imageMap = getMap(latitude, latitudeSign, longitude, longitudeSign, mapZoom);
 			canvas.redraw();
-			Double[] calculations = calculate(latitude, latitudeSign, longitude, longitudeSign, satelliteLeft, satelliteRight);
+			Double[] calculations = calculate(latitude, latitudeSign, longitude, longitudeSign, elevation, satelliteLeft, satelliteRight);
 			if(calculations[0] != null && calculations[1] != null)
 			{
 				azimuth = calculations[0];
@@ -464,6 +479,7 @@ public class DishHelper
 		public void widgetSelected (SelectionEvent e)
 		{
 			longitudeSign = 1;
+			elevation = elevate((latitude * latitudeSign), (longitude * longitudeSign));
 			imageMap = getMap(latitude, latitudeSign, longitude, longitudeSign, mapZoom);
 			canvas.redraw();
 			/*
@@ -485,6 +501,7 @@ public class DishHelper
 		public void widgetSelected (SelectionEvent e)
 		{
 			longitudeSign = -1;
+			elevation = elevate((latitude * latitudeSign), (longitude * longitudeSign));
 			imageMap = getMap(latitude, latitudeSign, longitude, longitudeSign, mapZoom);
 			canvas.redraw();
 			/*
@@ -544,7 +561,7 @@ public class DishHelper
 		{
 			satelliteLeft = findSat(comboSatelliteLeft.getText(), satellites);
 			setDetailSatellites();
-			Double[] calculations = calculate(latitude, latitudeSign, longitude, longitudeSign, satelliteLeft, satelliteRight);
+			Double[] calculations = calculate(latitude, latitudeSign, longitude, longitudeSign, elevation, satelliteLeft, satelliteRight);
 			azimuth = calculations[0];
 			declination = calculations[1];
 			canvas.redraw();
@@ -560,7 +577,7 @@ public class DishHelper
 		{
 			satelliteRight = findSat(comboSatelliteRight.getText(), satellites);
 			setDetailSatellites();
-			Double[] calculations = calculate(latitude, latitudeSign, longitude, longitudeSign, satelliteLeft, satelliteRight);
+			Double[] calculations = calculate(latitude, latitudeSign, longitude, longitudeSign, elevation, satelliteLeft, satelliteRight);
 			azimuth = calculations[0];
 			declination = calculations[1];
 			canvas.redraw();
@@ -815,11 +832,12 @@ public class DishHelper
 	 * @param latitudeSign		Latitude sign to indicate hemisphere.
 	 * @param longitude			Absolute value of the user's longitude.
 	 * @param longitudeSign		Longitude sign to indicate hemisphere.
+	 * @param elevation			User's elevation from sea-level.
 	 * @param satelliteLeft		Outer satellite to aim.
 	 * @param satelliteRight	Other outer satellite to aim.
 	 * @return					Double array containing azimuth and declination. They are needed elsewhere to draw the map.
 	 */
-	private Double[] calculate(Double latitude, int latitudeSign, Double longitude, int longitudeSign, Satellite satelliteLeft, Satellite satelliteRight)
+	private Double[] calculate(Double latitude, int latitudeSign, Double longitude, int longitudeSign, double height, Satellite satelliteLeft, Satellite satelliteRight)
 	{
 		Double[] output = new Double[2];
 		boolean havePosition = (latitude != null && longitude != null);
@@ -842,7 +860,7 @@ public class DishHelper
 
 			
 			double azimuth = azimuth(latitude, latitudeSign, longitude, longitudeSign, orbitalLongitude);
-			double declination = declination(latitude, latitudeSign, longitude, longitudeSign);
+			double declination = declination(latitude, latitudeSign, longitude, longitudeSign, height);
 			double elevation = elevation(latitude, latitudeSign, longitude, longitudeSign, orbitalLongitude);
 			double skew = skew(latitude, latitudeSign, longitude, longitudeSign, orbitalLongitude);
 			
@@ -876,10 +894,11 @@ public class DishHelper
 	 * @param latitudeSign		Latitude sign to indicate hemisphere.
 	 * @param longitude			Absolute value of the user's longitude.
 	 * @param longitudeSign		Longitude sign to indicate hemisphere.
+	 * @param elevation			User's elevation from sea-level.
 	 * @see						Magfield
 	 * @return					Double, magnetic declination.
 	 */
-	private double declination(double latitude, int latitudeSign, double longitude, int longitudeSign)
+	private double declination(double latitude, int latitudeSign, double longitude, int longitudeSign, double elevation)
 	{
 		DateFormat yyyyFormat = new SimpleDateFormat("yyyy");
         DateFormat mmFormat = new SimpleDateFormat("mm");
@@ -888,7 +907,7 @@ public class DishHelper
         int yyyy = Integer.parseInt(yyyyFormat.format(date)) - 2005; //Subtract 2005 since we are using IGRF 2005 coefficients and need the difference
         int mm = Integer.parseInt(mmFormat.format(date));
         int dd = Integer.parseInt(ddFormat.format(date));
-		return Magfield.calculate(latitude, longitude, yyyy, mm, dd, latitudeSign, longitudeSign);
+		return Magfield.calculate(latitude, longitude, yyyy, mm, dd, latitudeSign, longitudeSign, elevation);
 	}
 	
 	/**
@@ -1482,6 +1501,71 @@ public class DishHelper
 
 		httpclient.getConnectionManager().shutdown();
 		return values;
+	}
+	
+	/**
+	 * Attempts to find the user's elevation
+	 */
+	private double elevate(double latitude, double longitude)
+	{
+		double value = 0.0;
+		HttpClient httpclient = new DefaultHttpClient();
+		try
+		{
+			HttpGet httpget = new HttpGet(DishHelper.ELEVATION_URI + "&X_Value=" + longitude + "&Y_Value=" + latitude);
+			HttpResponse response = httpclient.execute(httpget);
+			HttpEntity entity = response.getEntity();
+			if (entity != null)
+			{
+				
+				DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+				Document doc = builder.parse(entity.getContent());
+				
+				NodeList nodes;
+				Element ele;
+				
+				/*
+				 * Grab our geolocation values from XML, convert to Number, round them to three significant digits,
+				 * convert to number _again_, determine hemisphere from the sign of the number,
+				 * then convert to String (yes another one!), strip negative signs and decimals, 
+				 * convert (lol) to Integer for Spinner, and set as selection for the spinner.
+				 */
+				nodes = doc.getElementsByTagName("Elevation");
+				if (nodes.getLength() > 0)
+				{
+					ele = (Element) nodes.item(0);
+					double elevation = Double.parseDouble(ele.getTextContent());
+					value = elevation;
+				}
+				else
+				{
+					this.log.warn("Unable to find Elevation tag.");
+				}
+			}
+		}
+		catch (ClientProtocolException e)
+		{
+			log.warn("Error in the HTTP protocol.", e);
+		}
+		catch (UnknownHostException e)
+		{
+			warn("Unknown host. We may not have a network connection.", e);
+		}
+		catch (IOException e)
+		{
+			log.warn("Unable to execute HTTPClient or parse its results.", e);
+		}
+		catch (ParserConfigurationException e)
+		{
+			log.warn("Error initializing DocumentBuilder.", e);
+		}
+		catch (SAXException e)
+		{
+			log.warn("Improperly-formatted XML.", e);
+		}
+
+		httpclient.getConnectionManager().shutdown();
+		return value;
 	}
 	
 	/**

@@ -962,15 +962,14 @@ public class Magfield
 		return (X != 0.0 || Y != 0.0) ? Math.atan2(Y, X) : (double) 0.0;
 	}
 	
-	public static double calculate(double lat, double lon, int yyyy, int mm, int dd, int latsign, int lonsign)
+	public static double calculate(double lat, double lon, int yyyy, int mm, int dd, int latsign, int lonsign, double height)
 	{
 		int model = 9; // IGRF 2005
-		return calculate(lat, lon, yyyy, mm, dd, latsign, lonsign, model);
+		return calculate(lat, lon, yyyy, mm, dd, latsign, lonsign, height, model);
 	}
 	
-	public static double calculate(double lat, double lon, int yyyy, int mm, int dd, int latsign, int lonsign, int model)
+	public static double calculate(double lat, double lon, int yyyy, int mm, int dd, int latsign, int lonsign, double height, int model)
 	{
-		double height = 0;
 		double[] field = new double[6];
 
 		int varsign = lonsign;
