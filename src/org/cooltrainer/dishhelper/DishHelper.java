@@ -913,6 +913,8 @@ public class DishHelper
 	/**
 	 * Calculate true azimuth based on our location and where we're aiming.
 	 * 
+	 * Azimuth = 180 + \left [\frac{tan(SatLon - SiteLon)}{sin(SiteLat)} \right ]
+	 * 
 	 * @param latitude			Absolute value of the user's latitude.
 	 * @param latitudeSign		Latitude sign to indicate hemisphere.
 	 * @param longitude			Absolute value of the user's longitude.
@@ -953,6 +955,8 @@ public class DishHelper
 	
 	/**
 	 * Calculate antenna elevation based on our location and where we're aiming.
+	 * 
+	 * Elevation = arctan\left [\frac{cos(SatLon - SiteLon)cos(SiteLat) - .1512}{\sqrt{1 - cos^{2}(SatLon - SiteLon)cos^{2}(SiteLat )}} \right ]
 	 * 
 	 * @param latitude			Absolute value of the user's latitude.
 	 * @param latitudeSign		Latitude sign to indicate hemisphere.
@@ -1026,6 +1030,8 @@ public class DishHelper
 	}
 	/**
 	 * Compute LNB skew for our location and where we're aiming.
+	 * 
+	 * Skew = -arctan \left [ \frac{sin(SiteLon - SatLon)}{tan(SiteLat)} \right ]
 	 * 
 	 * @param latitude			Absolute value of the user's latitude.
 	 * @param latitudeSign		Latitude sign to indicate hemisphere.
