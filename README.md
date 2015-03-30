@@ -7,7 +7,7 @@ This is DishHelper, an open-source satellite antenna aiming assistant.
 Source
 ------
 
-The [canonical repository for DishHelper](https://cooltrainer.org/source/hg/DishHelper) is hosted on [Cooltrainer.org](https://cooltrainer.org) with a [GitHub remote](https://github.com/okeeblow/DishHelper) for social features like pull requests.
+The [canonical repository for DishHelper](https://phabricator.cooltrainer.org/diffusion/DH/) is hosted on [Cooltrainer.org](https://cooltrainer.org) with a [GitHub remote](https://github.com/okeeblow/DishHelper) for social features like pull requests.
 
 
 Dependencies
